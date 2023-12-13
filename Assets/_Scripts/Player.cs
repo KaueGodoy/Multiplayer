@@ -4,6 +4,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 6f;
     [SerializeField] private GameInput _gameInput;
+    [SerializeField] private LayerMask _countersLayerMask;
 
     private Vector3 _lastInteractionDir;
 
@@ -28,7 +29,7 @@ public class Player : MonoBehaviour
 
         float interactionDistance = 2f;
 
-        if (Physics.Raycast(transform.position, _lastInteractionDir, out RaycastHit raycastHit, interactionDistance))
+        if (Physics.Raycast(transform.position, _lastInteractionDir, out RaycastHit raycastHit, interactionDistance, _countersLayerMask))
         {
             if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
             {
