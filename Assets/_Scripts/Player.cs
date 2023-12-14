@@ -1,7 +1,16 @@
+using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+
+    public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
+    public class OnSelectedCounterChangedEventArgs : EventArgs
+    {
+        public ClearCounter SelectedCounter;
+    }
+
+
     [SerializeField] private float _moveSpeed = 6f;
     [SerializeField] private GameInput _gameInput;
     [SerializeField] private LayerMask _countersLayerMask;
@@ -9,6 +18,21 @@ public class Player : MonoBehaviour
     private Vector3 _lastInteractionDir;
 
     private bool isWalking;
+
+    private ClearCounter _selectedClearCounter;
+
+    private void Start()
+    {
+        _gameInput.OnInteractAction += _gameInput_OnInteractAction;
+    }
+
+    private void _gameInput_OnInteractAction(object sender, System.EventArgs e)
+    {
+        if (_selectedClearCounter != null)
+        {
+            _selectedClearCounter.Interact();
+        }
+    }
 
     private void Update()
     {
@@ -33,10 +57,20 @@ public class Player : MonoBehaviour
         {
             if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
             {
-                clearCounter.Interact();
+                if (clearCounter != _selectedClearCounter)
+                    SetSelectedCounter(clearCounter);
             }
-
+            else
+            {
+                SetSelectedCounter(null);
+            }
         }
+        else
+        {
+            SetSelectedCounter(null);
+        }
+
+        Debug.Log(_selectedClearCounter);
 
     }
 
@@ -101,5 +135,15 @@ public class Player : MonoBehaviour
     public bool IsWalking()
     {
         return isWalking;
+    }
+
+    private void SetSelectedCounter(ClearCounter selectedCounter)
+    {
+        this._selectedClearCounter = selectedCounter;
+
+        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs
+        {
+            SelectedCounter = _selectedClearCounter
+        });
     }
 }
