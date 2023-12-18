@@ -58,11 +58,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 855718309369662294}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a50b5b4b426f5241a6f0a10f3f85bb5, type: 3}
+  m_Script: {fileID: 11500000, guid: a3df7c7c2b54c5c4a9b22bce8593237f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _kitchenObjectSO: {fileID: 11400000, guid: c06ea8f3f1601b544b360c479eff6da1, type: 2}
   _counterTopPoint: {fileID: 4569787940802265469}
+  _secondClearCounter: {fileID: 0}
+  testing: 0
 --- !u!1 &2015824320585751268
 GameObject:
   m_ObjectHideFlags: 0
