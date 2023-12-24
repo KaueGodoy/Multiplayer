@@ -90,7 +90,7 @@ public class CuttingCounter : BaseCounter
     private KitchenObjectSO GetOutPutForInput(KitchenObjectSO inputKitchenObjectSO)
     {
         CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(inputKitchenObjectSO);
-
+            
         if (cuttingRecipeSO != null)
         {
             return cuttingRecipeSO.Output;
