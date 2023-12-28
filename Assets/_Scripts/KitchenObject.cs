@@ -50,7 +50,7 @@ public class KitchenObject : MonoBehaviour
         if (this is PlateKitchenObject)
         {
             plateKitchenObject = this as PlateKitchenObject;
-            return true;
+            return true;    
         }
         else
         {
