@@ -8,6 +8,9 @@ public class DeliveryManager : MonoBehaviour
     public event EventHandler OnRecipeSpawned;
     public event EventHandler OnRecipeCompleted;
 
+    public event EventHandler OnRecipeSuccess;
+    public event EventHandler OnRecipeFailed;
+
     public static DeliveryManager Instance { get; private set; }
 
     [SerializeField] private RecipeListSO _recipeListSO;
@@ -82,6 +85,7 @@ public class DeliveryManager : MonoBehaviour
                     _waitingRecipeSOlist.RemoveAt(i);
 
                     OnRecipeCompleted?.Invoke(this, EventArgs.Empty);
+                    OnRecipeSuccess?.Invoke(this, EventArgs.Empty);
                     return;
                 }
             }
@@ -89,6 +93,7 @@ public class DeliveryManager : MonoBehaviour
 
         // No matches found
         // Player delivered wrong plate
+        OnRecipeFailed?.Invoke(this, EventArgs.Empty);
     }
 
     public List<RecipeSO> GetWaitingRecipeSOList()
