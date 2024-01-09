@@ -3,12 +3,50 @@ using UnityEngine;
 public class SoundManager : MonoBehaviour
 {
 
+    public static SoundManager Instance { get; private set; }
+
     [SerializeField] private AudioClipRefsSO audioClipRefsSO;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
         DeliveryManager.Instance.OnRecipeSuccess += DeliveryManager_OnRecipeSuccess;
         DeliveryManager.Instance.OnRecipeFailed += DeliveryManager_OnRecipeFailed;
+
+        CuttingCounter.OnAnyCut += CuttingCounter_OnAnyCut;
+
+        Player.Instance.OnPickedSomething += Player_OnPickedSomething;
+
+        BaseCounter.OnAnyObjectPlacedHere += BaseCounter_OnAnyObjectPlacedHere;
+
+        TrashCounter.OnAnyObjectTrashed += TrashCounter_OnAnyObjectTrashed;
+    }
+
+    private void TrashCounter_OnAnyObjectTrashed(object sender, System.EventArgs e)
+    {
+        TrashCounter trashCounter = sender as TrashCounter;
+        PlaySound(audioClipRefsSO.Trash, trashCounter.transform.position);
+    }
+
+    private void BaseCounter_OnAnyObjectPlacedHere(object sender, System.EventArgs e)
+    {
+        BaseCounter baseCounter = sender as BaseCounter;
+        PlaySound(audioClipRefsSO.ObjectDrop, baseCounter.transform.position);
+    }
+
+    private void Player_OnPickedSomething(object sender, System.EventArgs e)
+    {
+        PlaySound(audioClipRefsSO.ObjectPickup, Player.Instance.transform.position);
+    }
+
+    private void CuttingCounter_OnAnyCut(object sender, System.EventArgs e)
+    {
+        CuttingCounter cuttingCounter = sender as CuttingCounter;
+        PlaySound(audioClipRefsSO.Chop, cuttingCounter.transform.position);
     }
 
     private void DeliveryManager_OnRecipeFailed(object sender, System.EventArgs e)
@@ -31,5 +69,10 @@ public class SoundManager : MonoBehaviour
     private void PlaySound(AudioClip audioClip, Vector3 position, float volume = 1f)
     {
         AudioSource.PlayClipAtPoint(audioClip, position, volume);
+    }
+
+    public void PlayFootstepsSounds(Vector3 position, float volume)
+    {
+        PlaySound(audioClipRefsSO.Footstep, position, volume);
     }
 }
