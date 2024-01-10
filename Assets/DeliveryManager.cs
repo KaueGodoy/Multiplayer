@@ -11,6 +11,8 @@ public class DeliveryManager : MonoBehaviour
     public event EventHandler OnRecipeSuccess;
     public event EventHandler OnRecipeFailed;
 
+    private int _successfulRecipesAmount;
+
     public static DeliveryManager Instance { get; private set; }
 
     [SerializeField] private RecipeListSO _recipeListSO;
@@ -41,8 +43,6 @@ public class DeliveryManager : MonoBehaviour
                 RecipeSO waitingRecipeSO = _recipeListSO.RecipeSOList[UnityEngine.Random.Range(0, _recipeListSO.RecipeSOList.Count)];
 
                 _waitingRecipeSOlist.Add(waitingRecipeSO);
-
-                Debug.Log("Recipe: " + waitingRecipeSO);
 
                 OnRecipeSpawned?.Invoke(this, EventArgs.Empty);
             }
@@ -82,6 +82,8 @@ public class DeliveryManager : MonoBehaviour
                 if (plateContentsMatchesRecipe)
                 {
                     // player delivered the correct recipe
+                    _successfulRecipesAmount++;
+
                     _waitingRecipeSOlist.RemoveAt(i);
 
                     OnRecipeCompleted?.Invoke(this, EventArgs.Empty);
@@ -99,5 +101,10 @@ public class DeliveryManager : MonoBehaviour
     public List<RecipeSO> GetWaitingRecipeSOList()
     {
         return _waitingRecipeSOlist;
+    }
+
+    public int GetSuccessfulRecipesAmount()
+    {
+        return _successfulRecipesAmount;
     }
 }
