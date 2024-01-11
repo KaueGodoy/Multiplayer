@@ -8,6 +8,9 @@ public class KitchenGameManager : MonoBehaviour
 
     public event EventHandler OnStateChanged;
 
+    public event EventHandler OnGamePaused;
+    public event EventHandler OnGameUnpaused;
+
     private enum State
     {
         WaitingToStart,
@@ -24,10 +27,22 @@ public class KitchenGameManager : MonoBehaviour
     private float _gamePlayingTimer;
     private float _gamePlayingTimerMax = 5f;
 
+    private bool _isGamePaused;
+
     private void Awake()
     {
         Instance = this;
         _state = State.WaitingToStart;
+    }
+
+    private void Start()
+    {
+        GameInput.Instance.OnPauseAction += GameInput_OnPauseAction;
+    }
+
+    private void GameInput_OnPauseAction(object sender, EventArgs e)
+    {
+        TogglePauseGame();
     }
 
     private void Update()
@@ -63,7 +78,7 @@ public class KitchenGameManager : MonoBehaviour
                 break;
         }
 
-        Debug.Log(_state);
+        //Debug.Log(_state);
     }
 
     public bool IsGamePlaying()
@@ -89,5 +104,21 @@ public class KitchenGameManager : MonoBehaviour
     public float GetGamePlayingTimerNormalized()
     {
         return 1 - (_gamePlayingTimer / _gamePlayingTimerMax);
+    }
+
+    public void TogglePauseGame()
+    {
+        _isGamePaused = !_isGamePaused;
+        if (_isGamePaused)
+        {
+            Time.timeScale = 0f;
+            OnGamePaused?.Invoke(this, EventArgs.Empty);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            OnGameUnpaused?.Invoke(this, EventArgs.Empty);
+        }
+
     }
 }
