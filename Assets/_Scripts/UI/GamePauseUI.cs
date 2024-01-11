@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,6 +6,7 @@ public class GamePauseUI : MonoBehaviour
 {
     [SerializeField] private Button _resumeButton;
     [SerializeField] private Button _restartButton;
+    [SerializeField] private Button _optionsButton;
     [SerializeField] private Button _mainMenuButton;
 
     private void Awake()
@@ -23,6 +25,10 @@ public class GamePauseUI : MonoBehaviour
             TrashCounter.ResetStaticData();
 
             Loader.Load(Loader.Scene.GameScene);
+        });
+        _optionsButton.onClick.AddListener(() =>
+        {
+            OptionsUI.Instance.Show();
         });
         _mainMenuButton.onClick.AddListener(() =>
         {
