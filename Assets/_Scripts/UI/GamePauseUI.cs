@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,7 +27,8 @@ public class GamePauseUI : MonoBehaviour
         });
         _optionsButton.onClick.AddListener(() =>
         {
-            OptionsUI.Instance.Show();
+            Hide();
+            OptionsUI.Instance.Show(Show);
         });
         _mainMenuButton.onClick.AddListener(() =>
         {
@@ -57,6 +57,8 @@ public class GamePauseUI : MonoBehaviour
     private void Show()
     {
         gameObject.SetActive(true);
+
+        _resumeButton.Select();
     }
 
     private void Hide()

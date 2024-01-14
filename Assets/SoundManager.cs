@@ -15,7 +15,7 @@ public class SoundManager : MonoBehaviour
     {
         Instance = this;
 
-       _volume =  PlayerPrefs.GetFloat(PlayerPrefs_SoundEffectsVolume, .5f);
+        _volume = PlayerPrefs.GetFloat(PlayerPrefs_SoundEffectsVolume, .5f);
     }
 
     private void Start()
@@ -81,6 +81,16 @@ public class SoundManager : MonoBehaviour
     public void PlayFootstepsSounds(Vector3 position, float volume)
     {
         PlaySound(audioClipRefsSO.Footstep, position, volume);
+    }
+
+    public void PlayCountdownSound()
+    {
+        PlaySound(audioClipRefsSO.Warning[0], Vector3.zero);
+    }
+
+    public void PlayWarningSound(Vector3 position)
+    {
+        PlaySound(audioClipRefsSO.Warning[1], position);
     }
 
     public void ChangeVolume()
