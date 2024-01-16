@@ -197,7 +197,7 @@ MonoBehaviour:
   _backgroundImage: {fileID: 5313487409473092296}
   _iconImage: {fileID: 316003077902863740}
   _messageText: {fileID: 2888283477011966217}
-  _successColor: {r: 0.45882353, g: 1, b: 0, a: 1}
+  _successColor: {r: 0.09019608, g: 0.59607846, b: 0.003921569, a: 1}
   _failedColor: {r: 0.8207547, g: 0.15873085, b: 0.15873085, a: 1}
   _successSprite: {fileID: 21300000, guid: 6c562ac6d3e47ff4794df31886c6d864, type: 3}
   _failedSprire: {fileID: 21300000, guid: 0d6e1281049dccc4189bf308b2ccf331, type: 3}
@@ -483,7 +483,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.45705712, g: 1, b: 0, a: 1}
+  m_Color: {r: 0.08634331, g: 0.5943396, b: 0.0028034954, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
