@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class DeliveryManager : MonoBehaviour
+public class DeliveryManager : NetworkBehaviour
 {
 
     public event EventHandler OnRecipeSpawned;
@@ -20,7 +21,7 @@ public class DeliveryManager : MonoBehaviour
     private List<RecipeSO> _waitingRecipeSOlist;
 
 
-    private float _spawnRecipeTimer;
+    private float _spawnRecipeTimer = 4f;
     private float _spawnRecipeTimerMax = 4f;
     private int _waitingRecipesMax = 4;
 
@@ -33,6 +34,8 @@ public class DeliveryManager : MonoBehaviour
 
     private void Update()
     {
+        if (!IsServer) return;
+
         _spawnRecipeTimer -= Time.deltaTime;
         if (_spawnRecipeTimer <= 0f)
         {
@@ -40,13 +43,21 @@ public class DeliveryManager : MonoBehaviour
 
             if (KitchenGameManager.Instance.IsGamePlaying() && _waitingRecipeSOlist.Count < _waitingRecipesMax)
             {
-                RecipeSO waitingRecipeSO = _recipeListSO.RecipeSOList[UnityEngine.Random.Range(0, _recipeListSO.RecipeSOList.Count)];
+                int waitingRecipeSOIndex = UnityEngine.Random.Range(0, _recipeListSO.RecipeSOList.Count);
 
-                _waitingRecipeSOlist.Add(waitingRecipeSO);
-
-                OnRecipeSpawned?.Invoke(this, EventArgs.Empty);
+                SpawnNewWaitingRecipeClientRpc(waitingRecipeSOIndex);
             }
         }
+    }
+
+    [ClientRpc]
+    private void SpawnNewWaitingRecipeClientRpc(int waitingRecipeSOIndex)
+    {
+        RecipeSO waitingRecipeSO = _recipeListSO.RecipeSOList[waitingRecipeSOIndex];
+
+        _waitingRecipeSOlist.Add(waitingRecipeSO);
+
+        OnRecipeSpawned?.Invoke(this, EventArgs.Empty);
     }
 
     public void DeliverRecipe(PlateKitchenObject plateKitchenObject)
