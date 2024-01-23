@@ -25,7 +25,7 @@ public class SoundManager : MonoBehaviour
 
         CuttingCounter.OnAnyCut += CuttingCounter_OnAnyCut;
 
-        //Player.Instance.OnPickedSomething += Player_OnPickedSomething;
+        Player.OnAnyPickedSomething += Player_OnPickedSomething;
 
         BaseCounter.OnAnyObjectPlacedHere += BaseCounter_OnAnyObjectPlacedHere;
 
@@ -46,7 +46,8 @@ public class SoundManager : MonoBehaviour
 
     private void Player_OnPickedSomething(object sender, System.EventArgs e)
     {
-        //PlaySound(audioClipRefsSO.ObjectPickup, Player.Instance.transform.position);
+        Player player = sender as Player;
+        PlaySound(audioClipRefsSO.ObjectPickup, player.transform.position);
     }
 
     private void CuttingCounter_OnAnyCut(object sender, System.EventArgs e)

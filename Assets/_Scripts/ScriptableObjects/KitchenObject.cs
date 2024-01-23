@@ -1,10 +1,17 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class KitchenObject : MonoBehaviour
+public class KitchenObject : NetworkBehaviour
 {
     [SerializeField] private KitchenObjectSO _kitchenObjectSO;
 
     private IKitchenObjectParent _kitchenObjectParent;
+    private FollowTransform _followTransform;
+
+    private void Awake()
+    {
+        _followTransform = GetComponent<FollowTransform>();
+    }
 
     public KitchenObjectSO GetKitchenObjectSO()
     {
@@ -29,8 +36,8 @@ public class KitchenObject : MonoBehaviour
         kitchenObjectParent.SetKitchenObject(this);
 
         // update the visual
-        transform.parent = kitchenObjectParent.GetKitchenObjectFollowTransform();
-        transform.localPosition = Vector3.zero;
+
+        _followTransform.SetTargetTransform(kitchenObjectParent.GetKitchenObjectFollowTransform());
     }
 
     public IKitchenObjectParent GetKitchenObjectParent()
@@ -50,7 +57,7 @@ public class KitchenObject : MonoBehaviour
         if (this is PlateKitchenObject)
         {
             plateKitchenObject = this as PlateKitchenObject;
-            return true;    
+            return true;
         }
         else
         {
@@ -59,14 +66,8 @@ public class KitchenObject : MonoBehaviour
         }
     }
 
-    public static KitchenObject SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)
+    public static void SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)
     {
-        Transform kitchenObjectTransform = Instantiate(kitchenObjectSO.Prefab);
-
-        KitchenObject kitchenObject = kitchenObjectTransform.GetComponent<KitchenObject>();
-
-        kitchenObject.SetKitchenObjectParent(kitchenObjectParent);
-
-        return kitchenObject;
+        KitchenGameMultiplayer.Instance.SpawnKitchenObject(kitchenObjectSO, kitchenObjectParent);
     }
 }
