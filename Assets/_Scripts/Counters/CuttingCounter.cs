@@ -1,4 +1,5 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
 public class CuttingCounter : BaseCounter, IHasProgress
@@ -25,16 +26,10 @@ public class CuttingCounter : BaseCounter, IHasProgress
             {
                 if (HasRecipeWithInput(player.GetKitchenObject().GetKitchenObjectSO()))
                 {
-                    player.GetKitchenObject().SetKitchenObjectParent(this);
-                    _cuttingProgress = 0;
+                    KitchenObject kitchenObject = player.GetKitchenObject();
+                    kitchenObject.SetKitchenObjectParent(this);
 
-                    CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO());
-
-
-                    OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs
-                    {
-                        progressNormalized = (float)_cuttingProgress / cuttingRecipeSO.CuttingProgressMax
-                    });
+                    InteractLogicPlaceObjectOnCounterServerRpc();
                 }
             }
             else
@@ -67,32 +62,68 @@ public class CuttingCounter : BaseCounter, IHasProgress
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void InteractLogicPlaceObjectOnCounterServerRpc()
+    {
+        InteractLogicPlaceObjectOnCounterClientRpc();
+    }
+
+    [ClientRpc]
+    private void InteractLogicPlaceObjectOnCounterClientRpc()
+    {
+        _cuttingProgress = 0;
+
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs
+        {
+            progressNormalized = 0f
+        });
+    }
+
     public override void InteractAlternate(Player player)
     {
         if (HasKitchenObject() && HasRecipeWithInput(GetKitchenObject().GetKitchenObjectSO()))
         {
-            _cuttingProgress++;
+            CutObjectServerRpc();
+            TestCuttingProgressDoneServerRpc();
+        }
+    }
 
-            OnCut?.Invoke(this, EventArgs.Empty);
-            Debug.Log(OnAnyCut.GetInvocationList().Length);
-            OnAnyCut?.Invoke(this, EventArgs.Empty);
+    [ServerRpc(RequireOwnership = false)]
+    private void CutObjectServerRpc()
+    {
+        CutObjectClientRpc();
+    }
 
-            CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO());
+    [ClientRpc]
+    private void CutObjectClientRpc()
+    {
+        _cuttingProgress++;
 
-            OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs
-            {
-                progressNormalized = (float)_cuttingProgress / cuttingRecipeSO.CuttingProgressMax
-            });
+        OnCut?.Invoke(this, EventArgs.Empty);
+        Debug.Log(OnAnyCut.GetInvocationList().Length);
+        OnAnyCut?.Invoke(this, EventArgs.Empty);
 
-            if (_cuttingProgress >= cuttingRecipeSO.CuttingProgressMax)
-            {
-                KitchenObjectSO outputKitchenObjectSO = GetOutPutForInput(GetKitchenObject().GetKitchenObjectSO());
+        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO());
 
-                GetKitchenObject().DestroySelf();
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs
+        {
+            progressNormalized = (float)_cuttingProgress / cuttingRecipeSO.CuttingProgressMax
+        });
 
-                KitchenObject.SpawnKitchenObject(outputKitchenObjectSO, this);
-            }
+    }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void TestCuttingProgressDoneServerRpc()
+    {
+        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO());
+
+        if (_cuttingProgress >= cuttingRecipeSO.CuttingProgressMax)
+        {
+            KitchenObjectSO outputKitchenObjectSO = GetOutPutForInput(GetKitchenObject().GetKitchenObjectSO());
+
+            KitchenObject.DestroyKitchenObject(GetKitchenObject());
+
+            KitchenObject.SpawnKitchenObject(outputKitchenObjectSO, this);
         }
     }
 
