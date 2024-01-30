@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices.WindowsRuntime;
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -11,6 +11,35 @@ public class KitchenGameMultiplayer : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
+
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void StartHost()
+    {
+        NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
+        NetworkManager.Singleton.StartHost();
+    }
+
+    private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest connectionApprovalRequest,
+                                                          NetworkManager.ConnectionApprovalResponse connectionApprovalResponse)
+    {
+        connectionApprovalResponse.Approved = true;
+
+        //if (KitchenGameManager.Instance.IsWaitingToStart())
+        //{
+        //    connectionApprovalResponse.Approved = true;
+        //    connectionApprovalResponse.CreatePlayerObject = true;
+        //}
+        //else
+        //{
+        //    connectionApprovalResponse.Approved = false;
+        //}
+    }
+
+    public void StartClient()
+    {
+        NetworkManager.Singleton.StartClient();
     }
 
     public void SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)

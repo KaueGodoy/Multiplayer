@@ -15,19 +15,19 @@ public class TestingNetcodeUI : MonoBehaviour
         _serverBtn.onClick.AddListener(() =>
         {
             Debug.Log("SERVER");
-            NetworkManager.Singleton.StartServer();
+            //NetworkManager.Singleton.StartServer();
             Hide();
         });
         _hostBtn.onClick.AddListener(() =>
         {
             Debug.Log("HOST");
-            NetworkManager.Singleton.StartHost();
+            KitchenGameMultiplayer.Instance.StartHost();
             Hide();
         });
         _clientBtn.onClick.AddListener(() =>
         {
             Debug.Log("CLIENT");
-            NetworkManager.Singleton.StartClient();
+            KitchenGameMultiplayer.Instance.StartClient();
             Hide();
         });
     }
