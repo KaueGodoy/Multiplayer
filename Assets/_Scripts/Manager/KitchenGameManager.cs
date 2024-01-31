@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class KitchenGameManager : NetworkBehaviour
 {
-
     public static KitchenGameManager Instance { get; private set; }
 
     public event EventHandler OnStateChanged;
@@ -43,6 +42,7 @@ public class KitchenGameManager : NetworkBehaviour
 
     private Dictionary<ulong, bool> _playerPausedDictionary;
 
+    [SerializeField] private Transform _playerPrefab;
 
     private void Awake()
     {
@@ -66,6 +66,16 @@ public class KitchenGameManager : NetworkBehaviour
         if (IsServer)
         {
             NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
+        }
+    }
+
+    private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+    {
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            Transform playerTransform = Instantiate(_playerPrefab);
+            playerTransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
         }
     }
 
