@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -45,7 +46,8 @@ public class KitchenGameMultiplayer : NetworkBehaviour
     {
         _playerDataNetworkList.Add(new PlayerData
         {
-            ClientId = clientId
+            ClientId = clientId,
+            ColorId = GetFirstUnusedColorId(),
         });
     }
 
@@ -146,6 +148,19 @@ public class KitchenGameMultiplayer : NetworkBehaviour
         return playerIndex < _playerDataNetworkList.Count;
     }
 
+    public int GetPlayerDataIndexFromClientId(ulong clientId)
+    {
+        for (int i = 0; i < _playerDataNetworkList.Count; i++)
+        {
+            if (_playerDataNetworkList[i].ClientId == clientId)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     public PlayerData GetPlayerDataFromClientId(ulong clientId)
     {
         foreach (PlayerData playerData in _playerDataNetworkList)
@@ -182,6 +197,44 @@ public class KitchenGameMultiplayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void ChangePlayerColorServerRpc(int colorId, ServerRpcParams serverRpcParams = default)
     {
+        if (!IsColorAvailable(colorId))
+        {   // Color not available
+            return;
+        }
 
+        int playerDataIndex = GetPlayerDataIndexFromClientId(serverRpcParams.Receive.SenderClientId);
+
+        PlayerData playerData = _playerDataNetworkList[playerDataIndex];
+
+        playerData.ColorId = colorId;
+
+        _playerDataNetworkList[playerDataIndex] = playerData;
+    }
+
+    private bool IsColorAvailable(int colorId)
+    {
+        foreach (PlayerData playerData in _playerDataNetworkList)
+        {
+            if (playerData.ColorId == colorId)
+            {
+                // Color in use
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private int GetFirstUnusedColorId()
+    {
+        for (int i = 0; i < _playerColorList.Count; i++)
+        {
+            if (IsColorAvailable(i))
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 }

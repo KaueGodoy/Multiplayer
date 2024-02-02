@@ -15,11 +15,16 @@ public class CharacterColorSelectSingleUI : MonoBehaviour
             KitchenGameMultiplayer.Instance.ChangePlayerColor(_colorId);
         });
     }
-        
+
     private void Start()
     {
+        KitchenGameMultiplayer.Instance.OnPlayerDataNetworkListChanged += KitchenGameMultiplayer_OnPlayerDataNetworkListChanged;
         _image.color = KitchenGameMultiplayer.Instance.GetPlayerColor(_colorId);
+        UpdateIsSelected();
+    }
 
+    private void KitchenGameMultiplayer_OnPlayerDataNetworkListChanged(object sender, System.EventArgs e)
+    {
         UpdateIsSelected();
     }
 

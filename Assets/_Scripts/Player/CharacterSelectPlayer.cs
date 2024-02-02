@@ -33,7 +33,7 @@ public class CharacterSelectPlayer : MonoBehaviour
             PlayerData playerData = KitchenGameMultiplayer.Instance.GetPlayerDataFromIndex(_playerIndex);
             _readyGameObject.SetActive(CharacterSelectReady.Instance.IsPlayerReady(playerData.ClientId));
 
-            _playerVisual.SetPlayerColor(KitchenGameMultiplayer.Instance.GetPlayerColor(_playerIndex));
+            _playerVisual.SetPlayerColor(KitchenGameMultiplayer.Instance.GetPlayerColor(playerData.ColorId));
         }
         else
         {
