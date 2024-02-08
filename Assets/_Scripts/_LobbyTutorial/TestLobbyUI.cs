@@ -6,6 +6,8 @@ public class TestLobbyUI : MonoBehaviour
     [SerializeField] private Button _createLobbyButton;
     [SerializeField] private Button _searchLobbyButton;
     [SerializeField] private Button _joinLobbyButton;
+    [SerializeField] private Button _quickJoinLobbyButton;
+
     [SerializeField] private TestLobby _testLobby;
 
     private void Awake()
@@ -21,6 +23,10 @@ public class TestLobbyUI : MonoBehaviour
         _joinLobbyButton.onClick.AddListener(() =>
         {
             _testLobby.JoinLobby();
+        });
+        _quickJoinLobbyButton.onClick.AddListener(() =>
+        {
+            _testLobby.QuickJoinLobby();
         });
     }
 }
