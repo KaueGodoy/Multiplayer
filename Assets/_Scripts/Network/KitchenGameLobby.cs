@@ -65,4 +65,23 @@ public class KitchenGameLobby : MonoBehaviour
             Debug.Log(e);
         }
     }
+
+    public async void JoinWithCode(string lobbyCode)
+    {
+        try
+        {
+            _joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
+
+            KitchenGameMultiplayer.Instance.StartClient();
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    public Lobby GetLobby()
+    {
+        return _joinedLobby;
+    }
 }
