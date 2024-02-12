@@ -18,6 +18,7 @@ public class LobbyUI : MonoBehaviour
     {
         _mainMenuButton.onClick.AddListener(() =>
         {
+            KitchenGameLobby.Instance.LeaveLobby();
             Loader.Load(Loader.Scene.MainMenuScene);
         });
         _createLobbyButton.onClick.AddListener(() =>

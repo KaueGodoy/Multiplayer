@@ -1,3 +1,4 @@
+using System;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
@@ -7,6 +8,9 @@ using UnityEngine;
 public class KitchenGameLobby : MonoBehaviour
 {
     public static KitchenGameLobby Instance { get; private set; }
+
+    public event EventHandler OnCreateLobbyStarted;
+    public event EventHandler OnCreateLobbyFailed;
 
     private Lobby _joinedLobby;
 
@@ -26,7 +30,7 @@ public class KitchenGameLobby : MonoBehaviour
         if (UnityServices.State != ServicesInitializationState.Initialized)
         {
             InitializationOptions InitializationOptions = new InitializationOptions();
-            InitializationOptions.SetProfile(Random.Range(0, 1000).ToString());
+            InitializationOptions.SetProfile(UnityEngine.Random.Range(0, 1000).ToString());
 
             await UnityServices.InitializeAsync(InitializationOptions);
 
@@ -62,6 +66,8 @@ public class KitchenGameLobby : MonoBehaviour
 
     public async void CreateLobby(string lobbyName, bool isPrivate)
     {
+        OnCreateLobbyStarted?.Invoke(this, EventArgs.Empty);
+
         try
         {
             _joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, KitchenGameMultiplayer.MaxPlayerAmount, new CreateLobbyOptions
@@ -75,6 +81,8 @@ public class KitchenGameLobby : MonoBehaviour
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
+
+            OnCreateLobbyFailed?.Invoke(this, EventArgs.Empty);
         }
 
     }
@@ -104,6 +112,55 @@ public class KitchenGameLobby : MonoBehaviour
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
+        }
+    }
+
+    public async void DeleteLobby()
+    {
+        if (_joinedLobby != null)
+        {
+            try
+            {
+                await LobbyService.Instance.DeleteLobbyAsync(_joinedLobby.Id);
+
+                _joinedLobby = null;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
+        }
+    }
+
+    public async void LeaveLobby()
+    {
+        if (_joinedLobby != null)
+        {
+            try
+            {
+                await LobbyService.Instance.RemovePlayerAsync(_joinedLobby.Id, AuthenticationService.Instance.PlayerId);
+
+                _joinedLobby = null;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
+        }
+    }
+
+    public async void KickPlayer(string playerId)
+    {
+        if (IsLobbyHost())
+        {
+            try
+            {
+                await LobbyService.Instance.RemovePlayerAsync(_joinedLobby.Id, playerId);
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
         }
     }
 
