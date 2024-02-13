@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
@@ -11,6 +12,10 @@ public class KitchenGameLobby : MonoBehaviour
 
     public event EventHandler OnCreateLobbyStarted;
     public event EventHandler OnCreateLobbyFailed;
+
+    public event EventHandler OnJoinStarted;
+    public event EventHandler OnQuickJoinFailed;
+    public event EventHandler OnJoinFailed;
 
     private Lobby _joinedLobby;
 
@@ -64,6 +69,19 @@ public class KitchenGameLobby : MonoBehaviour
         return _joinedLobby != null && _joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
     }
 
+    private void ListLobbies()
+    {
+        QueryLobbiesOptions queryLobbiesOptions = new QueryLobbiesOptions
+        {
+            Filters = new List<QueryFilter>
+            {
+                new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT)
+            }
+        };
+
+        LobbyService.Instance.QueryLobbiesAsync();
+    }
+
     public async void CreateLobby(string lobbyName, bool isPrivate)
     {
         OnCreateLobbyStarted?.Invoke(this, EventArgs.Empty);
@@ -89,6 +107,8 @@ public class KitchenGameLobby : MonoBehaviour
 
     public async void QuickJoin()
     {
+        OnJoinStarted.Invoke(this, EventArgs.Empty);
+
         try
         {
             _joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
@@ -98,11 +118,15 @@ public class KitchenGameLobby : MonoBehaviour
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
+
+            OnQuickJoinFailed.Invoke(this, EventArgs.Empty);
         }
     }
 
     public async void JoinWithCode(string lobbyCode)
     {
+        OnJoinStarted.Invoke(this, EventArgs.Empty);
+
         try
         {
             _joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
@@ -112,6 +136,8 @@ public class KitchenGameLobby : MonoBehaviour
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
+
+            OnJoinFailed.Invoke(this, EventArgs.Empty);
         }
     }
 

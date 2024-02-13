@@ -18,7 +18,27 @@ public class LobbyMessageUI : MonoBehaviour
         KitchenGameMultiplayer.Instance.OnFailedToJoinGame += KitchenGameMultiplayer_OnFailedToJoinGame;
         KitchenGameLobby.Instance.OnCreateLobbyStarted += KitchenGameLobby_OnCreateLobbyStarted;
         KitchenGameLobby.Instance.OnCreateLobbyFailed += KitchenGameLobby_OnCreateLobbyFailed;
+
+        KitchenGameLobby.Instance.OnJoinStarted += KitchenGameLobby_OnJoinStarted;
+        KitchenGameLobby.Instance.OnJoinFailed += KitchenGameLobby_OnJoinFailed;
+        KitchenGameLobby.Instance.OnQuickJoinFailed += KitchenGameLobby_OnQuickJoinFailed;
+
         Hide();
+    }
+
+    private void KitchenGameLobby_OnQuickJoinFailed(object sender, System.EventArgs e)
+    {
+        ShowMessage("Could not find a Lobby to Quick Join");
+    }
+
+    private void KitchenGameLobby_OnJoinFailed(object sender, System.EventArgs e)
+    {
+        ShowMessage("Failed to join Lobby");
+    }
+
+    private void KitchenGameLobby_OnJoinStarted(object sender, System.EventArgs e)
+    {
+        ShowMessage("Joining Lobby...");
     }
 
     private void KitchenGameLobby_OnCreateLobbyFailed(object sender, System.EventArgs e)
