@@ -10,6 +10,7 @@ public class HostDisconnectUI : MonoBehaviour
     {
         _playAgainButton.onClick.AddListener(() =>
         {
+            KitchenGameLobby.Instance.LeaveLobby();
             Loader.Load(Loader.Scene.MainMenuScene);
         });
     }

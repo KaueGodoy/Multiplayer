@@ -4,7 +4,6 @@ using Unity.Netcode;
 
 public class CharacterSelectReady : NetworkBehaviour
 {
-
     public static CharacterSelectReady Instance { get; private set; }
 
     public event EventHandler OnReadyChanged;

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using TMPro;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +15,9 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private TMP_InputField _playerNameInputField;
 
     [SerializeField] private LobbyCreateUI _lobbyCreateUI;
+
+    [SerializeField] private Transform _lobbyContainer;
+    [SerializeField] private Transform _lobbyTemplate;
 
     private void Awake()
     {
@@ -33,6 +38,8 @@ public class LobbyUI : MonoBehaviour
         {
             KitchenGameLobby.Instance.JoinWithCode(_joinCodeInputField.text);
         });
+
+        _lobbyTemplate.gameObject.SetActive(false);
     }
 
     private void Start()
@@ -42,5 +49,36 @@ public class LobbyUI : MonoBehaviour
         {
             KitchenGameMultiplayer.Instance.SetPlayerName(newText);
         });
+
+        KitchenGameLobby.Instance.OnLobbyListChanged += KitchenGameLobby_OnLobbyListChanged;
+
+        UpdateLobbyList(new List<Lobby>());
+    }
+
+    private void KitchenGameLobby_OnLobbyListChanged(object sender, KitchenGameLobby.OnLobbyListChangedEventArgs e)
+    {
+        UpdateLobbyList(e.LobbyList);
+    }
+
+    private void UpdateLobbyList(List<Lobby> lobbyList)
+    {
+        foreach (Transform child in _lobbyContainer)
+        {
+            if (child == _lobbyTemplate) continue;
+            Destroy(child.gameObject);
+        }
+
+        foreach (Lobby lobby in lobbyList)
+        {
+            Transform lobbyTransform = Instantiate(_lobbyTemplate, _lobbyContainer);
+            lobbyTransform.gameObject.SetActive(true);
+            lobbyTransform.GetComponent<LobbyListSingleUI>().SetLobby(lobby);
+        }
+
+    }
+
+    private void OnDestroy()
+    {
+        KitchenGameLobby.Instance.OnLobbyListChanged -= KitchenGameLobby_OnLobbyListChanged;
     }
 }
